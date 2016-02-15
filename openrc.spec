@@ -7,6 +7,9 @@ Group:		Base
 Source0:	https://github.com/OpenRC/openrc/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	12e1e2c70c03f93fb42f3549d8cdbc0a
 URL:		https://github.com/OpenRC/openrc
+BuildRequires:	libselinux-devel
+BuildRequires:	ncurses-devel
+BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
