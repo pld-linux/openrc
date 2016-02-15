@@ -1,29 +1,40 @@
 Summary:	OpenRC manages the services, startup and shutdown of a host
 Name:		openrc
-Version:	0.6.1
+Version:	0.20.4
 Release:	0.1
 License:	BSD
 Group:		Base
-Source0:	http://roy.marples.name/downloads/openrc/%{name}-%{version}.tar.bz2
-# Source0-md5:	90aa095508b0e92b06eda43b641cba49
-URL:		http://roy.marples.name/projects/openrc
+Source0:	https://github.com/OpenRC/openrc/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	12e1e2c70c03f93fb42f3549d8cdbc0a
+URL:		https://github.com/OpenRC/openrc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-OpenRC is a dependency based init system that works with the system
-provided init program, normally /sbin/init. It is not a replacement
-for /sbin/init. OpenRC is 100% compatible with Gentoo init scripts,
-which means you can probably find one for the daemons you want to
-start in the Gentoo Portage Tree. OpenRC also provides an init script
-that runs BSD rc.d style scripts too, making it easy to port your BSD
-system to OpenRC.
+OpenRC is a dependency-based init system that works with the
+system-provided init program, normally /sbin/init. Currently, it does
+not have an init program of its own.
 
 %prep
 %setup -q
 
+cat <<EOF >> Makefile.inc
+MKNET=no
+MKPAM=pam
+MKPREFIX=yes
+MKPKGCONFIG=no
+MKSELINUX=yes
+MKSTATICLIBS=no
+MKTERMCAP=ncurses
+MKTOOLS=yes
+PKG_PREFIX=%{_prefix}/pkg
+LOCAL_PREFIX=%{_prefix}/local
+PREFIX=%{_prefix}
+BRANDING="PLD-Linux/$(uname -s)"
+EOF
+
 %build
-%configure
-%{__make}
+%{__make} \
+	CC="%{__cc}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -35,4 +46,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS CREDITS CHANGES ChangeLog NEWS README THANKS TODO
+%attr(755,root,root) %{_sbindir}/openrc
+%attr(755,root,root) %{_sbindir}/openrc-run
+%attr(755,root,root) %{_sbindir}/rc
+%attr(755,root,root) %{_sbindir}/rc-service
+%attr(755,root,root) %{_sbindir}/rc-update
+%attr(755,root,root) %{_sbindir}/runscript
+%attr(755,root,root) %{_sbindir}/service
+%attr(755,root,root) %{_sbindir}/start-stop-daemon
+%{_mandir}/man3/e*.3*
+%{_mandir}/man3/rc*.3*
+%{_mandir}/man8/openrc-run.8*
+%{_mandir}/man8/openrc.8*
+%{_mandir}/man8/rc-service.8*
+%{_mandir}/man8/rc-sstat.8*
+%{_mandir}/man8/rc-status.8*
+%{_mandir}/man8/rc-update.8*
+%{_mandir}/man8/service.8
+%{_mandir}/man8/start-stop-daemon.8*
