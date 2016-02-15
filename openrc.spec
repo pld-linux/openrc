@@ -49,22 +49,23 @@ EOF
 
 %build
 %{__make} \
-	CC="%{__cc}"
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags}" \
+	LDFLAGS="%{rpmldflags}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
+%if %{with openrc}
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-%if %{without openrc}
-%{__rm} -r $RPM_BUILD_ROOT%{_sysconfdir}
-%{__rm} -r $RPM_BUILD_ROOT/lib
-%{__rm} -r $RPM_BUILD_ROOT/libexec
-%{__rm} -r $RPM_BUILD_ROOT/sbin
-%{__rm} -r $RPM_BUILD_ROOT%{_includedir}
-%{__rm} -r $RPM_BUILD_ROOT%{_prefix}/lib
-%{__rm} -r $RPM_BUILD_ROOT%{_prefix}/libexec
-%{__rm} -r $RPM_BUILD_ROOT%{_bindir}/rc-status
+%else
+# manually install only start-stop-daemon
+install -d $RPM_BUILD_ROOT/sbin
+install -p src/rc/start-stop-daemon $RPM_BUILD_ROOT/sbin
+%{__make} -C man install \
+	MAN3= \
+	MAN8=start-stop-daemon.8 \
+	DESTDIR=$RPM_BUILD_ROOT
 %endif
 
 %clean
@@ -95,4 +96,4 @@ rm -rf $RPM_BUILD_ROOT
 %files start-stop-daemon
 %defattr(644,root,root,755)
 %{_mandir}/man8/start-stop-daemon.8*
-%attr(755,root,root) %{_sbindir}/start-stop-daemon
+%attr(755,root,root) /sbin/start-stop-daemon
