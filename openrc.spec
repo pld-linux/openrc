@@ -5,7 +5,7 @@
 Summary:	OpenRC manages the services, startup and shutdown of a host
 Name:		openrc
 Version:	0.20.4
-Release:	0.1
+Release:	0.3
 License:	BSD
 Group:		Base
 Source0:	https://github.com/OpenRC/openrc/archive/%{version}/%{name}-%{version}.tar.gz
@@ -93,6 +93,9 @@ mv $RPM_BUILD_ROOT{%{_sbindir},/sbin}/start-stop-daemon
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post	libs -p /sbin/ldconfig
+%postun	libs -p /sbin/ldconfig
 
 %if %{with openrc}
 %files
